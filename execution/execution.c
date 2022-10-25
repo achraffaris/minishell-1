@@ -89,7 +89,9 @@ void    run_cmd(t_parse *cmd)
             dup2(cmd->read_src, 0);
         if (cmd->write_dst != NONE)
             dup2(cmd->write_dst, 1);
-        if (execve(cmd_path, full_cmd, cmd->primary_env) == ERROR_RETURNED)
+        if (run_as_builtin(cmd))
+            exit(0);
+        else if (execve(cmd_path, full_cmd, cmd->primary_env) == ERROR_RETURNED)
             raise_error(NULL, NULL);
         exit(0);
     }
