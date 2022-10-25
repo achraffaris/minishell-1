@@ -32,14 +32,14 @@ void	herdoc_handler(t_parse *parse)
 					{
 						if (a)
 						{
+                            write(tmp1->fd, a, ft_strlen(a));
+                            write(tmp1->fd, "\n", ft_strlen(a));
 							ft_putstr_fd(a, tmp1->fd);
 							ft_putstr_fd("\n", tmp1->fd);
 						}
 						free(a);
 						a = readline("> ");
 					}
-                    char buff[200];
-                    printf("readed = %zd\n",read(tmp1->fd, buff, 200));
 				}
 				tmp1 = tmp1->next;
 			}

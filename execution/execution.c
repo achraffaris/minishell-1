@@ -122,6 +122,7 @@ void    execution(t_parse *data, t_env *env, char **primary_env)
     current = data;
     while (current)
     {
+
         current->write_dst = NONE;
         current->env = env;
         current->primary_env = primary_env;
@@ -133,9 +134,8 @@ void    execution(t_parse *data, t_env *env, char **primary_env)
             current->write_dst = fd[WRITE_END];
         }
         run_cmd(current);
-        close(fd[WRITE_END]);
+        close(current->write_dst);
         current = current->next;
-        char buff[200];
         if (current)
             current->read_src = fd[READ_END];
         i++; 

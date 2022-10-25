@@ -7,7 +7,7 @@
         {
             "label": "tasks",
             "type": "shell",
-            "command": "gcc -g *.c libft/*.c execution/*/*.c execution/*/*/*.c execution/*.c -lreadline",
+            "command": "gcc -g3 *.c libft/*.c execution/*/*.c execution/*/*/*.c execution/*.c -lreadline",
             "group": {
                 "kind": "build",
                 "isDefault": true
