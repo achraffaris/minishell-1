@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/16 22:29:16 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/16 22:58:31 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/22 23:37:25 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_token
 	int				flag_cmg;
 	struct s_token	*next;
 	char			*value;
+	int				rdr_flg;
 }	t_token;
 
 #endif

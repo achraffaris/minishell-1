@@ -8,12 +8,10 @@
 #define UNSET "unset"
 #define ENV "env"
 #define EXIT "exit"
-#define PATH "PATH"
+
 #define FALSE 0
 #define TRUE 1
 
-#define BUILTIN_CMD 3
-#define NORMAL_CMD 4
 #define NULL_CHARACTER '\0'
 
 #define ECHO_N_FLAG "-n"

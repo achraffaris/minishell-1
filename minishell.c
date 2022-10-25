@@ -1,6 +1,5 @@
 #include "header.h"
 #include "execution/execution.h"
-
 void add_back(t_token **list, t_token *tmp)
 {
     if (*list == NULL)
@@ -14,20 +13,54 @@ void add_back(t_token **list, t_token *tmp)
     } 
 }
 
-int find_cmd_type(char *cmd)
+void	herdoc_handler(t_parse *parse)
 {
-    if (is_identical(cmd, ECHO)
-                || is_identical(cmd, CD)
-                || is_identical(cmd, PWD)
-                || is_identical(cmd, EXPORT)
-                || is_identical(cmd, UNSET)
-                || is_identical(cmd, ENV)
-                || is_identical(cmd, EXIT)
-                || is_identical(cmd, PATH))
-    {
-        return (BUILTIN_CMD);
-    }
-    return (NORMAL_CMD);
+	t_parse *tmp = parse;
+	t_rdr *tmp1;
+	while(tmp)
+	{
+		if (tmp->rdr != NULL)
+		{
+			tmp1 = tmp->rdr;
+			while(tmp1)
+			{
+				if (tmp1->type == 3 && tmp1->herdoc)
+				{
+					tmp1->fd = open("/tmp/herdoc", O_CREAT | O_RDWR | O_TRUNC, 0644);
+					char *a = readline("> ");
+					while (ft_strncmp(a, tmp1->value, ft_strlen(a)))
+					{
+						if (a)
+						{
+							ft_putstr_fd(a, tmp1->fd);
+							ft_putstr_fd("\n", tmp1->fd);
+						}
+						free(a);
+						a = readline("> ");
+					}
+                    char buff[200];
+                    printf("readed = %zd\n",read(tmp1->fd, buff, 200));
+				}
+				tmp1 = tmp1->next;
+			}
+		}
+		tmp = tmp->next;
+	}
+}
+
+void	rdr_create_files(t_parse *parse)
+{
+	t_rdr *tmp = parse->rdr;
+	while(tmp)
+	{
+		if (tmp->type == 4)
+			tmp->fd = open(tmp->value, O_RDWR, 0777);
+		if (tmp->type == 5)
+			tmp->fd = open(tmp->value, O_CREAT | O_WRONLY | O_TRUNC, 0777);
+		if (tmp->type == 6)
+			tmp->fd = open(tmp->value, O_CREAT | O_RDWR | O_APPEND, 0777);
+		tmp = tmp->next;
+	}
 }
 
 int main(int ac, char **av, char **env)
@@ -37,7 +70,7 @@ int main(int ac, char **av, char **env)
     t_lexer  *lexer;
     t_token *token = NULL;
     t_token *tmp;
-    t_parse *parse;
+    t_parse *parse = NULL;
 	t_env 	*env_list;
 
     env_list = setup_env(env);
@@ -50,13 +83,13 @@ int main(int ac, char **av, char **env)
         if (str[0] != '\0')
         {
             lexer = init_lexer(str, lexer);
-            while ((tmp = get_next_token(lexer)) != NULL)
+            while ((tmp = get_next_token(lexer)) != NULL && !lexer->flg_error)
                 add_back(&token, tmp);
             if ((token) != NULL)
             {
                 parse = init_parsing(&token, lexer);
             }
-            if(!token)
+            if(!token && parse != NULL)
             {
                 free(parse->cmd);
                 parse->cmd = NULL;
@@ -65,17 +98,10 @@ int main(int ac, char **av, char **env)
                 free(parse->rdr);
                 parse->rdr = NULL;
             }
-                
-            //printf("%s------\n",parse->cmd);
             //t_parse *tmp1 = parse;
-			parse->env = env_list;
-            parse->type = find_cmd_type(parse->cmd);
-            parse->default_env = env;
-			execution(parse);
-            //printf("%s------\n",tmp1->cmd);
-            if (lexer->flg_error == 0)
+            /*
+            if (lexer->flg_error == 0 && parse != NULL)
             {
-                /*
                 while(tmp1)
                 {
                     if (tmp1->cmd != NULL)
@@ -97,19 +123,25 @@ int main(int ac, char **av, char **env)
                         t_rdr *r = tmp1->rdr;
                         while(r)
                         {
-                            printf("rdr->type = %d, rdr->value = %s\n", r->type, r->value);
+                            printf("rdr->type = |%d|, rdr->value = |%s|\t, flg_error = |%d|\n", r->type, r->value, r->herdoc);
                             r = r->next;
                         }
                     }
                     printf("-----------------------\n");
                     tmp1 = tmp1->next;
 					
-                }*/
-            }
-            else if (lexer->flg_error == 1)
-                printf("syntax_error\n");
+                }
+            }*/
+            if (lexer->flg_error == 1)
+                write(2, "syntax_error\n", 14);
+            if (parse != NULL)
+                herdoc_handler(parse);
+			if (!lexer->flg_error && parse != NULL)
+				rdr_create_files(parse);
             if (ft_strlen(str) > 0)
                 add_history(str);
+            if (parse != NULL)
+                execution(parse, env_list, env);
             tmp = token;
             while(tmp)
             {

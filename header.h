@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/16 22:23:14 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/18 22:58:30 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/24 01:43:48 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "libft/libft.h"
+# include <fcntl.h>
 
 int exitm;
 
@@ -29,6 +30,7 @@ typedef struct s_lexer
 	char			*contents;
 	int				flg;
 	int				x;
+	int				y;
 	int				flg_error;
 	char			**env;
 }	t_lexer;
@@ -38,6 +40,8 @@ typedef struct s_rdr
 	int				type;
 	char			*value;
 	struct s_rdr	*next;
+	int				herdoc;
+	int				fd;
 }	t_rdr;
 // typedef struct s_herdoc
 // {
@@ -54,15 +58,12 @@ typedef struct s_env
 
 typedef struct s_parse
 {
-	int				id;
 	char			*cmd;
 	char			**arg;
-	char			**cmd_plus_args;
-	int				type;
 	t_rdr			*rdr;
     t_env   		*env;
-	char			**default_env;
 	int				pid;
+	char			**primary_env;
 	int				read_src;
 	int				write_dst;
 	struct s_parse	*next;
@@ -71,7 +72,8 @@ typedef struct s_parse
 t_lexer	*init_lexer(char *contents, t_lexer *lexer);
 void	lexer_advance(t_lexer *lexer);
 void	lexer_skip_space(t_lexer *lexer);
-t_token	*init_token(int type, char *value);
+// t_token	*init_tok÷en(int type, char *value);
+t_token	*init_token(int type, char *value, t_lexer *lexer);
 t_token	*get_next_token(t_lexer *lexer);
 char	*collect_string(t_lexer *lexer);
 char	*get_current_char_as_string(t_lexer *lexer);
@@ -91,4 +93,12 @@ t_token	*collect_pipe(t_lexer *lexer);
 char	**copy_env(char **env);
 char	*dollar_handler(t_lexer *lexer);
 t_parse	*init_parsing(t_token **token, t_lexer *lexer);
+void	error_rdr(t_lexer *lexer);
+char	*stock_rdr_value(t_lexer *lexer, char *str);
+char	*collect_string_handle(t_lexer *lexer, char *s);
+char	*join_to_str(t_lexer *lexer);
+t_rdr	*add_rdr(char *str, int type, int herdoc);
+void	add_back_parse(t_parse **parse, t_parse *tmp);
+void	add_back_rdr(t_rdr **rdr, t_rdr *tmp);
+int	count_arg(t_token *head);
 #endif

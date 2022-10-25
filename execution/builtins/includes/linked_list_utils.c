@@ -1,5 +1,34 @@
 #include "../builtins.h"
 
+t_env *duplicate_env(t_env *env)
+{
+    t_env   *new;
+    t_env   *new_head;
+    t_env   *current;
+
+    new = malloc(sizeof(t_env));
+    if (!new)
+        raise_error("Memory Allocation Failed!", "malloc");
+    new_head = new;
+    current = env;
+    while (current)
+    {
+        new->key = ft_strdup(current->key);
+        new->value = ft_strdup(current->value);
+        if (current->next)
+        {
+            new->next = malloc(sizeof(t_env));
+            if (!new->next)
+                raise_error("Memory Allocation Failed!", "malloc");
+        }
+        else
+            new->next = NULL;
+        current = current->next;
+        new = new->next;
+    }
+    return (new_head);
+}
+
 int env_size(t_env *env)
 {
     t_env *current;

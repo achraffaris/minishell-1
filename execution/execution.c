@@ -1,7 +1,5 @@
 #include "execution.h"
 
-int     exit_status;
-
 char    **get_full_cmd(char *cmd, char **args)
 {
     char **full_cmd;
@@ -17,153 +15,135 @@ char    **get_full_cmd(char *cmd, char **args)
     if (!full_cmd)
         raise_error("Memory allocation failed!", "malloc");
     i = 0;
-    full_cmd[i] = cmd;
+    full_cmd[i] = ft_strdup(cmd);
     i++;
     while (args && args[j])
-        full_cmd[i++] = args[j++];
+        full_cmd[i++] = ft_strdup(args[j++]);
     full_cmd[i] = NULL;
     return (full_cmd);
 }
 
-void    first_cmd_exec(t_parse *cmd, t_exec *exe)
+void    print_redirection_content(t_rdr *rd)
 {
+    t_rdr *current;
+
+    current = rd;
+    while (current)
+    {
+        char buff[200];
+        printf("readed = %zd\n",read(current->fd, buff, 200));
+        printf("fd no:%d type: %d content: %s\n", current->fd, current->type, buff);
+        current = current->next;
+    }
+}
+
+int get_input_redirection(t_parse *cmd)
+{
+    t_rdr *current;
+    int fd;
+
+    fd = 0;
+    current = cmd->rdr;
+    while (current)
+    {
+        if (current->type == HEREDOC || current->type == SINGLE_LEFT_RED)
+            fd = current->fd;
+        current = current->next;
+    }
+    return (fd);
+}
+
+int get_output_redirection(t_parse *cmd)
+{
+    t_rdr *current;
+    int fd;
+
+    fd = 0;
+    current = cmd->rdr;
+    while (current)
+    {
+        if (current->type == SINGLE_RIGHT_RED || current->type == DOUBLE_RIGHT_RED)
+            fd = current->fd;
+        current = current->next;
+    }
+    return (fd);
+}
+
+void    run_cmd(t_parse *cmd)
+{
+    char *cmd_path = find_cmd_path(cmd->cmd, cmd->env);
+    char **full_cmd = get_full_cmd(cmd->cmd, cmd->arg);
+    int in_red;
+    int out_red;
+
+    in_red = get_input_redirection(cmd);
+    out_red = get_output_redirection(cmd);
     cmd->pid = fork();
-    if (cmd->pid == ERROR_RETURNED)
-        raise_error(NULL, "fork");
     if (cmd->pid == 0)
     {
-        close(exe->pipes[cmd->id][0]);
-        dup2(exe->pipes[cmd->id][1], 1);
-        if (run_as_builtin(cmd))
-            exit(0);
-        else
-            if (execve(find_cmd_path(cmd->cmd, cmd->env), get_full_cmd(cmd->cmd, cmd->arg), cmd->default_env) == ERROR_RETURNED)
-                    raise_error(NULL, NULL);
+        if (in_red != 0)
+            cmd->read_src = in_red;
+        if (out_red != 0)
+            cmd->write_dst = out_red;
+        if (cmd->read_src != NONE)
+            dup2(cmd->read_src, 0);
+        if (cmd->write_dst != NONE)
+            dup2(cmd->write_dst, 1);
+        if (execve(cmd_path, full_cmd, cmd->primary_env) == ERROR_RETURNED)
+            raise_error(NULL, NULL);
         exit(0);
     }
 }
 
-void    midlle_cmds_exec(t_parse *cmd, t_exec *exe)
+int cmds_len(t_parse *cmds)
 {
-    cmd->pid = fork();
-    if (cmd->pid == ERROR_RETURNED)
-        raise_error(NULL, "fork");
-    if (cmd->pid == 0)
-    {
-        close(exe->pipes[cmd->id - 1][1]);
-        dup2(exe->pipes[cmd->id - 1][0], 0);
-        dup2(exe->pipes[cmd->id][1], 1);
-        close(exe->pipes[cmd->id][0]);
-        if (run_as_builtin(cmd))
-            exit(0);
-        else
-            if (execve(find_cmd_path(cmd->cmd, cmd->env), get_full_cmd(cmd->cmd, cmd->arg), cmd->default_env) == ERROR_RETURNED)
-                    raise_error(NULL, NULL);
-        exit(0);
-    }
-}
-
-void    last_cmds_exec(t_parse *cmd, t_exec *exe)
-{
-    cmd->pid = fork();
-    if (cmd->pid == ERROR_RETURNED)
-        raise_error(NULL, "fork");
-    if (cmd->pid == 0)
-    {
-        close(exe->pipes[cmd->id - 1][1]);
-        dup2(exe->pipes[cmd->id - 1][0], 0);
-        if (run_as_builtin(cmd))
-            exit(0);
-        else
-            if (execve(find_cmd_path(cmd->cmd, cmd->env), get_full_cmd(cmd->cmd, cmd->arg), cmd->default_env) == ERROR_RETURNED)
-                    raise_error(NULL, NULL);
-        exit(0);
-    }
-}
-
-void    run_cmd(t_parse *cmd, t_exec *exe)
-{
-    char    *cmd_path;
-    cmd_path = NULL;
-    if (exe->pipes)
-    {
-        if (cmd->id == 0)
-            first_cmd_exec(cmd, exe);
-        else if (cmd->id == exe->ncmds - 1)
-            last_cmds_exec(cmd, exe);
-        else
-            midlle_cmds_exec(cmd, exe);
-    }
-    else
-    {
-        if (cmd->type == NORMAL_CMD)
-        {
-            cmd->pid = fork();
-            if (cmd->pid == ERROR_RETURNED)
-                raise_error(NULL, "fork");
-            if (cmd->pid == 0)
-            {
-                if (execve(find_cmd_path(cmd->cmd, cmd->env), get_full_cmd(cmd->cmd, cmd->arg), cmd->default_env) == ERROR_RETURNED)
-                    raise_error(NULL, NULL);
-            }
-        }
-        else
-            run_as_builtin(cmd);
-    }
-    
-}
-
-t_exec  *setup_exec(t_parse *cmds)
-{
-    t_exec  *exe;
+    int i;
     t_parse *current;
 
-    exe = malloc(sizeof(t_exec));
-    if (!exe)
-        raise_error("Memory allocation failed!", "malloc");
-    exe->cmds = cmds;
-    exe->ncmds = 0;
+    i = 0;
     current = cmds;
     while (current)
     {
-        exe->ncmds++;
         current = current->next;
+        i++;
     }
-    exe->pipes = NULL;
-    if (exe->ncmds > 1)
-    {
-        exe->pipes = malloc(sizeof(int *) * (exe->ncmds - 1));
-        if (!exe->pipes)
-            raise_error("Memory allocation failed!", "malloc");
-    }
-    return (exe);
+    return (i);
 }
 
-void    execution(t_parse *data)
+void    execution(t_parse *data, t_env *env, char **primary_env)
 {
-    int i;
-
-    i = 0;
-    t_exec  *exe;
     t_parse *current;
+    int i;
+    int ncmds;
+    int fd[2];
 
-    exe = setup_exec(data);
-    current = exe->cmds;
-    
+    ncmds = cmds_len(data);
+    i = 0;
+    current = data;
     while (current)
     {
-        if (exe->pipes)
-            pipe(exe->pipes[i]);
-        current->id = i;
-        run_cmd(current, exe);
-        i++;
+        current->write_dst = NONE;
+        current->env = env;
+        current->primary_env = primary_env;
+        if (i == 0)
+            current->read_src = NONE;
+        if (i < (ncmds - 1))
+        {
+            pipe(fd);
+            current->write_dst = fd[WRITE_END];
+        }
+        run_cmd(current);
+        close(fd[WRITE_END]);
         current = current->next;
+        char buff[200];
+        if (current)
+            current->read_src = fd[READ_END];
+        i++; 
     }
     i = 0;
-    while (i <= exe->ncmds - 1)
+    while (i < ncmds)
     {
-        waitpid(0, &exitm, 0);
+        waitpid(0, 0, 0);
         i++;
     }
 }
-
