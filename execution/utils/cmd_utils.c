@@ -71,6 +71,9 @@ void    cmd_init(t_parse *cmd, t_env *env)
 {
     cmd->write_dst = NONE;
     cmd->env = env;
+    cmd->cmd_2d = get_full_cmd(cmd->cmd, cmd->arg);
+    cmd->env_2d = env_converter(cmd->env);
+    cmd->path = find_cmd_path(cmd->cmd, cmd->env);
 }
 
 int cmds_len(t_parse *cmds)

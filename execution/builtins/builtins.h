@@ -22,11 +22,11 @@
 int     is_identical(char *s1, char *s2);
 int     start_with(char *word, char *str);
 
-int     run_as_builtin(t_parse *data);
+int     run_as_builtin(t_parse *data, t_env **env);
 int     run_echo(t_parse *data);
 int     run_cd(t_parse *data);
 int     run_pwd(t_parse *data);
-int     run_unset(t_parse *data);
+int     run_unset(t_parse *data, t_env **env);
 int     run_export(t_parse *data);
 int     run_env(t_parse *data);
 int     run_exit(t_parse *data);
@@ -43,5 +43,6 @@ t_env   *duplicate_env(t_env *env);
 int     env_size(t_env *env);
 t_env   *get_next_min_item(t_env *env);
 int     all_env_items_printed(t_env *env);
+int     valid_echo_flag(char *flag);
 
 #endif

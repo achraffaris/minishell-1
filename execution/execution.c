@@ -1,15 +1,15 @@
 #include "execution.h"
 
-void    execute_cmd(t_parse *cmd)
+void    execute_cmd(t_parse *cmd, t_env **env)
 {
-    if (run_as_builtin(cmd))
+    if (run_as_builtin(cmd, env))
         exit(0);
-    else if (execve(find_cmd_path(cmd->cmd, cmd->env), get_full_cmd(cmd->cmd, cmd->arg), env_converter(cmd->env)) == ERROR_RETURNED)
+    else if (execve(cmd->path, cmd->cmd_2d, cmd->env_2d) == ERROR_RETURNED)
         raise_error(NULL, NULL);
     exit(0);
 }
 
-void    handle_cmd(t_parse *cmd)
+void    handle_cmd(t_parse *cmd, t_env **env)
 {
     int in_red;
     int out_red;
@@ -27,7 +27,7 @@ void    handle_cmd(t_parse *cmd)
             dup2(cmd->read_src, 0);
         if (cmd->write_dst != NONE)
             dup2(cmd->write_dst, 1);
-        execute_cmd(cmd);
+        execute_cmd(cmd, env);
     }
 }
 
@@ -43,17 +43,21 @@ void    wait_cmds(int ncmds)
     }
 }
 
-void    execution(t_parse *data, t_env *env, char **primary_env)
+void    execution(t_parse *data, t_env **env)
 {
     t_parse *current;
     int i;
     int fd[2];
+    int ncmds;
 
+    ncmds = cmds_len(data);
     i = 0;
     current = data;
     while (current)
     {
-        cmd_init(current, env);
+        cmd_init(current, *env);
+        if (ncmds == 1 && run_as_builtin(current, env))
+            break;
         if (i == 0)
             current->read_src = NONE;
         if (i < (cmds_len(data) - 1))
@@ -61,7 +65,7 @@ void    execution(t_parse *data, t_env *env, char **primary_env)
             pipe(fd);
             current->write_dst = fd[WRITE_END];
         }
-        handle_cmd(current);
+        handle_cmd(current, env);
         close(current->write_dst);
         current = current->next;
         if (current)

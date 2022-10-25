@@ -43,11 +43,7 @@ typedef struct s_rdr
 	int				herdoc;
 	int				fd;
 }	t_rdr;
-// typedef struct s_herdoc
-// {
-//     char *value;
-//     struct s_herdoc *next;
-// }
+
 typedef struct s_env
 {
     char            *key;
@@ -63,7 +59,9 @@ typedef struct s_parse
 	t_rdr			*rdr;
     t_env   		*env;
 	int				pid;
-	char			**primary_env;
+	char			*path;
+	char			**cmd_2d;
+	char			**env_2d;
 	int				read_src;
 	int				write_dst;
 	struct s_parse	*next;

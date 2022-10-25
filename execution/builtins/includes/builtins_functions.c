@@ -9,7 +9,7 @@ int run_echo(t_parse *data)
     n_flag_found = FALSE;
     if (!is_identical(data->cmd, ECHO))
         return (FALSE);
-    if (data->arg && is_identical(data->arg[0], ECHO_N_FLAG))
+    while (data->arg && valid_echo_flag(data->arg[i]))
     {
         n_flag_found = TRUE;
         i++;
@@ -45,7 +45,7 @@ int run_pwd(t_parse *data)
     return (TRUE);
 }
 
-int run_unset(t_parse *data)
+int run_unset(t_parse *data, t_env **env)
 {
     int i;
 
@@ -55,7 +55,7 @@ int run_unset(t_parse *data)
     while (data->arg && data->arg[i])
     {
         if (env_key_valid(data->arg[i]))
-            remove_env_item(data->arg[i], data->env, &data->env);
+            remove_env_item(data->arg[i], data->env, env);
         i++;
     }
     return (TRUE);

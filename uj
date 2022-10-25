@@ -142,7 +142,7 @@ int main(int ac, char **av, char **env)
             if (ft_strlen(str) > 0)
                 add_history(str);
             if (parse != NULL)
-                execution(parse, &env_list);
+                execution(parse, env_list, env);
             tmp = token;
             while(tmp)
             {
