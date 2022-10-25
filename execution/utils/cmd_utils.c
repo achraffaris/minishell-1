@@ -10,6 +10,9 @@ char    *extract_cmd_path(char **paths, char *cmd)
     full_path = NULL;
     if (!paths)
         return (cmd);
+    //if (access ())
+    //return (cmd);
+    //stat
     new_cmd = ft_strjoin("/", cmd);
     while (paths[i])
     {
@@ -22,6 +25,10 @@ char    *extract_cmd_path(char **paths, char *cmd)
         free(full_path);
         i++;
     }
+    //printf ("command not found \n");
+    //exitm = 127;
+    //return (NULL);
+    //exit (num % 255);
     return (cmd);
 }
 

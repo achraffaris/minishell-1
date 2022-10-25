@@ -5,7 +5,10 @@ void    execute_cmd(t_parse *cmd, t_env **env)
     if (run_as_builtin(cmd, env))
         exit(0);
     else if (execve(cmd->path, cmd->cmd_2d, cmd->env_2d) == ERROR_RETURNED)
+    {
         raise_error(NULL, NULL);
+    }
+        
     exit(0);
 }
 
