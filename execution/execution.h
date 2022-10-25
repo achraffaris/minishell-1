@@ -24,6 +24,14 @@ void    raise_error(char *err_msg, char *err_src);
 int     substring_length(char *str, char to_stop, int mode);
 t_env   *setup_env(char **env);
 char    *find_cmd_path(char *cmd, t_env *env);
+char    *extract_cmd_path(char **paths, char *cmd);
+char    *find_cmd_path(char *cmd, t_env *env);
+char    **get_full_cmd(char *cmd, char **args);
+void    cmd_init(t_parse *cmd, t_env *env);
+int     cmds_len(t_parse *cmds);
+int     get_input_redirection(t_parse *cmd);
+int     get_output_redirection(t_parse *cmd);
+char    **env_converter(t_env *env);
 
 
 #endif
