@@ -31,16 +31,17 @@ void    handle_cmd(t_parse *cmd, t_env **env)
     }
 }
 
-void    wait_cmds(int ncmds)
+void    wait_cmds(int ncmds, t_parse *cmds)
 {
-    int i;
-
-    i = 0;
-    while (i < ncmds)
+    t_parse *current;
+    
+    current = cmds;
+    while (current)
     {
-        waitpid(0, 0, 0);
-        i++;
+        waitpid(current->pid, &exitm, 0);
+        current = current->next;
     }
+    printf("exit code =  %d\n", exitm);
 }
 
 void    execution(t_parse *data, t_env **env)
@@ -60,7 +61,7 @@ void    execution(t_parse *data, t_env **env)
             break;
         if (i == 0)
             current->read_src = NONE;
-        if (i < (cmds_len(data) - 1))
+        if (i < (ncmds - 1))
         {
             pipe(fd);
             current->write_dst = fd[WRITE_END];
@@ -72,5 +73,5 @@ void    execution(t_parse *data, t_env **env)
             current->read_src = fd[READ_END];
         i++; 
     }
-    wait_cmds(cmds_len(data));
+    wait_cmds(ncmds, data);
 }

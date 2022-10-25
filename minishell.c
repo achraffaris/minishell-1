@@ -18,6 +18,7 @@ void	herdoc_handler(t_parse *parse)
 {
 	t_parse *tmp = parse;
 	t_rdr *tmp1;
+    int fd[2];
 	while(tmp)
 	{
 		if (tmp->rdr != NULL)
@@ -27,21 +28,25 @@ void	herdoc_handler(t_parse *parse)
 			{
 				if (tmp1->type == 3 && tmp1->herdoc)
 				{
-					tmp1->fd = open("/tmp/herdoc", O_CREAT | O_RDWR | O_TRUNC, 0644);
+                    pipe(fd);
 					char *a = readline("> ");
 					while (ft_strncmp(a, tmp1->value, ft_strlen(a)))
 					{
 						if (a)
 						{
-                            write(tmp1->fd, a, ft_strlen(a));
-                            write(tmp1->fd, "\n", ft_strlen(a));
-							ft_putstr_fd(a, tmp1->fd);
-							ft_putstr_fd("\n", tmp1->fd);
+                            // write(tmp1->fd, a, ft_strlen(a));
+                            // write(tmp1->fd, "\n", ft_strlen(a));
+							ft_putstr_fd(a, fd[1]);
+							ft_putstr_fd("\n", fd[1]);
 						}
 						free(a);
 						a = readline("> ");
 					}
+                    close(fd[1]);
+					tmp1->fd = fd[0];
 				}
+                char buff[200];
+                // printf("read = %ld\n", read(tmp1->fd, buff, 200));
 				tmp1 = tmp1->next;
 			}
 		}

@@ -69,6 +69,7 @@ char    **get_full_cmd(char *cmd, char **args)
 
 void    cmd_init(t_parse *cmd, t_env *env)
 {
+    cmd->id = 0;
     cmd->write_dst = NONE;
     cmd->env = env;
     cmd->cmd_2d = get_full_cmd(cmd->cmd, cmd->arg);

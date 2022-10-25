@@ -54,6 +54,7 @@ typedef struct s_env
 
 typedef struct s_parse
 {
+	int				id;
 	char			*cmd;
 	char			**arg;
 	t_rdr			*rdr;
@@ -63,6 +64,7 @@ typedef struct s_parse
 	char			**cmd_2d;
 	char			**env_2d;
 	int				read_src;
+	int				exit_code;
 	int				write_dst;
 	struct s_parse	*next;
 }	t_parse;
