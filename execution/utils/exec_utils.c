@@ -11,7 +11,7 @@ char **env_converter(t_env *env)
     env_ptr = malloc(sizeof(char *) * (env_size(env) + 1));
     while (current)
     {
-        env_ptr[i] = ft_strjoin(ft_strjoin(current->key, "="), current->value);
+        env_ptr[i] = ft_strjoinx(ft_strjoinx(current->key, "="), current->value);
         current = current->next;
         i++;
     }

@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/16 22:23:14 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/24 01:43:48 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/27 09:29:38 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,9 @@
 # include <readline/history.h>
 # include "libft/libft.h"
 # include <fcntl.h>
+# include <signal.h>
 
-int exitm;
+int g_exitm;
 
 typedef struct s_lexer
 {
@@ -43,11 +44,7 @@ typedef struct s_rdr
 	int				herdoc;
 	int				fd;
 }	t_rdr;
-// typedef struct s_herdoc
-// {
-//     char *value;
-//     struct s_herdoc *next;
-// }
+
 typedef struct s_env
 {
     char            *key;
@@ -58,13 +55,17 @@ typedef struct s_env
 
 typedef struct s_parse
 {
+	int				id;
 	char			*cmd;
 	char			**arg;
 	t_rdr			*rdr;
     t_env   		*env;
 	int				pid;
-	char			**primary_env;
+	char			*path;
+	char			**cmd_2d;
+	char			**env_2d;
 	int				read_src;
+	int				exit_code;
 	int				write_dst;
 	struct s_parse	*next;
 }	t_parse;

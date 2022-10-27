@@ -10,10 +10,13 @@ char    *extract_cmd_path(char **paths, char *cmd)
     full_path = NULL;
     if (!paths)
         return (cmd);
-    new_cmd = ft_strjoin("/", cmd);
+    //if (access ())
+    //return (cmd);
+    //stat
+    new_cmd = ft_strjoinx("/", cmd);
     while (paths[i])
     {
-        full_path = ft_strjoin(paths[i], new_cmd);
+        full_path = ft_strjoinx(paths[i], new_cmd);
         if (access(full_path, X_OK) != ERROR_RETURNED)
         {
             free(new_cmd);
@@ -22,6 +25,10 @@ char    *extract_cmd_path(char **paths, char *cmd)
         free(full_path);
         i++;
     }
+    //printf ("command not found \n");
+    //g_exitm = 127;
+    //return (NULL);
+    //exit (num % 255);
     return (cmd);
 }
 
@@ -57,7 +64,7 @@ char    **get_full_cmd(char *cmd, char **args)
         i++;
     full_cmd = malloc(sizeof(char *) * (i + 2));
     if (!full_cmd)
-        raise_error("Memory allocation failed!", "malloc");
+        raise_error("Memory allocation failed!", "malloc", 0);
     i = 0;
     full_cmd[i] = ft_strdup(cmd);
     i++;
@@ -69,8 +76,12 @@ char    **get_full_cmd(char *cmd, char **args)
 
 void    cmd_init(t_parse *cmd, t_env *env)
 {
+    cmd->id = 0;
     cmd->write_dst = NONE;
     cmd->env = env;
+    cmd->cmd_2d = get_full_cmd(cmd->cmd, cmd->arg);
+    cmd->env_2d = env_converter(cmd->env);
+    cmd->path = find_cmd_path(cmd->cmd, cmd->env);
 }
 
 int cmds_len(t_parse *cmds)

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: afaris <afaris@student.42.fr>              +#+  +:+       +#+         #
+#    By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/20 14:08:55 by afaris            #+#    #+#              #
-#    Updated: 2021/11/24 17:48:02 by afaris           ###   ########.fr        #
+#    Updated: 2022/10/26 20:53:08 by schoukou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ ft_memset.c ft_strlcat.c ft_strnstr.c \
 ft_strmapi.c ft_putchar_fd.c ft_putstr_fd.c \
 ft_putendl_fd.c ft_split.c ft_putnbr_fd.c \
 ft_itoa.c ft_striteri.c ft_memmove.c \
+ft_strjoinx.c
 
 BONUSSRC = ft_lstnew.c ft_lstadd_front.c  \
 ft_lstsize.c ft_lstlast.c ft_lstadd_back.c \

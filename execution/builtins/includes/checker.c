@@ -14,3 +14,19 @@ int is_identical(char *s1, char *s2)
     return (FALSE);
 }
 
+int valid_echo_flag(char *flag)
+{
+    int i;
+
+    i = 0;
+    if (flag && flag[i] != '-' && flag[i + 1] != 'n')
+        return (FALSE);
+    i++;
+    while (flag && flag[i])
+    {
+        if (flag[i] != 'n')
+            return (FALSE);
+        i++;
+    }
+    return (TRUE);
+}
