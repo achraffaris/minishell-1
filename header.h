@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/16 22:23:14 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/24 01:43:48 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/28 13:01:40 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,14 @@
 # include <unistd.h>
 # include "token.h"
 # include <stdlib.h>
+# include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "libft/libft.h"
 # include <fcntl.h>
+# include <signal.h>
 
-int exitm;
+int g_exitm;
 
 typedef struct s_lexer
 {

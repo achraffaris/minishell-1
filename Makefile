@@ -1,6 +1,6 @@
 src = *.c ./libft/*.c ./execution/*/*.c ./execution/*/*/*.c ./execution/*.c
 minishell = minishell
-FLAGS =  -lreadline -Wall -Wextra -Werror -fsanitize= -g3
+FLAGS =  -lreadline -L/Users/schoukou/.brew/Cellar/readline/8.2.1/lib -I/Users/schoukou/.brew/Cellar/readline/8.2.1/include -Wall -Wextra -Werror #-fsanitize=address -g3
 CC = cc
 
 all : minishell

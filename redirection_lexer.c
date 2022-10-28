@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/23 21:54:29 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/23 21:55:59 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/28 15:33:44 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,27 @@
 
 char	*stock_rdr_value(t_lexer *lexer, char *str)
 {
+	char *a;
+	
 	if (lexer->c == '$')
-		str = ft_strjoin(str, dollar_handler(lexer));
+	{
+		a = dollar_handler(lexer);
+		str = ft_strjoin(str, a);
+		free (a);
+	}
 	else if (lexer->c == '\'' || lexer->c == '"')
 	{
-		str = ft_strjoin(str, join_to_str(lexer));
+		a = join_to_str(lexer);
+		str = ft_strjoin(str, a);
+		free (a);
 		lexer_advance(lexer);
 	}
 	else
-		str = ft_strjoin(str, get_current_char_as_string(lexer));
+	{
+		a = get_current_char_as_string(lexer);
+		str = ft_strjoin(str, a);
+		free (a);
+	}
 	if (lexer->c != '\0' && lexer->c != '\'' && lexer->c != '"'
 		&& lexer->c != '>' && lexer->c != '<'
 		&& lexer->c != ' ' && lexer->c != '|' && lexer->c != '$')

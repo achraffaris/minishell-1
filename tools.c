@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/16 22:10:53 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/24 01:35:20 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/27 00:43:46 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,20 @@ char	**copy_env(char **env)
 char	*search_in_env(char *c, t_lexer *lexer)
 {
 	int	i;
-
+	int x;
+	int y;
+	y = 0;
+	x = 0;
 	i = 0;
+	// printf("%s\n===", lexer->env[i]);
 	while (lexer->env[i])
 	{
 		if (!ft_strncmp(lexer->env[i], c, ft_strlen(c)))
 		{
-			free(c);
-			return (ft_substr(lexer->env[i], ft_strlen(c),
-					ft_strlen(lexer->env[i]) - ft_strlen(c)));
+			x = ft_strlen(c);
+			free(c);	
+			return (ft_substr(lexer->env[i], x,
+					ft_strlen(lexer->env[i]) - x));
 		}
 		i++;
 	}
@@ -84,24 +89,23 @@ char	*dollar_handler(t_lexer *lexer)
 	char	*s;
 	char	*c;
 
-	exitm = 0;
 	s = ft_strdup("");
 	c = ft_strdup("");
 	if (lexer->c == '$')
 		lexer_advance(lexer);
 	if (lexer->c == '?')
 	{
-		s = ft_strjoin(s, ft_itoa(exitm));
-		free(c);
+		s = ft_strjoin(s, ft_itoa(g_exitm));
 		lexer_advance(lexer);
 		return (s);
 	}
 	if (lexer->c != '_' && !ft_isalnum(lexer->c))
 	{
 		s = ft_strjoin(s, "$");
-		free(c);
+
 		return (s);
 	}
 	s = dollar_handler2(lexer, s, c);
+	free(c);
 	return (s);
 }

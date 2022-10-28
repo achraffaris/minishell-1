@@ -1,24 +1,52 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/27 08:44:28 by schoukou          #+#    #+#             */
+/*   Updated: 2022/10/28 15:55:28 by schoukou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 #include "execution/execution.h"
+#include <signal.h>
+
+void my_handler(int signum)
+{
+   if (signum == SIGINT)
+    {
+        printf("\n");
+        rl_on_new_line();
+        rl_replace_line("", 0);
+        rl_redisplay();
+    }
+}
 
 void add_back(t_token **list, t_token *tmp)
 {
+    t_token *tmp1;
+    
+    tmp1 = *list;
     if (*list == NULL)
         (*list) = tmp;
     else
     {
-        t_token *tmp1 = *list;
         while(tmp1->next != NULL)
-            tmp1 = tmp1->next;
+			tmp1 = tmp1->next;
         tmp1->next = tmp;
-    } 
+    }
 }
 
 void	herdoc_handler(t_parse *parse)
 {
-	t_parse *tmp = parse;
-	t_rdr *tmp1;
-    int fd[2];
+	t_parse *tmp;
+	t_rdr   *tmp1;
+    int     fd[2];
+
+    tmp = parse;
 	while(tmp)
 	{
 		if (tmp->rdr != NULL)
@@ -45,7 +73,6 @@ void	herdoc_handler(t_parse *parse)
                     close(fd[1]);
 					tmp1->fd = fd[0];
 				}
-                char buff[200];
                 // printf("read = %ld\n", read(tmp1->fd, buff, 200));
 				tmp1 = tmp1->next;
 			}
@@ -69,6 +96,40 @@ void	rdr_create_files(t_parse *parse)
 	}
 }
 
+void ft_free_list(t_parse *parse)
+{
+    int i;
+    t_parse *tmp;
+    while(parse)
+    {
+        if (parse->cmd)
+			free(parse->cmd);
+		if(parse->arg)
+        {
+            i = 0;
+            while(parse->arg[i])
+            {
+                free(parse->arg[i]);
+                i++;
+            }
+            free(parse->arg);
+        }
+        while(parse->rdr)
+        {
+            if(parse->rdr->value)
+			{
+                free(parse->rdr->value);
+				free(parse->rdr);
+			}
+            parse->rdr = parse->rdr->next;
+        }
+        tmp = parse->next;
+        free(parse);
+        parse = tmp;
+    }
+    free(parse);
+}
+
 int main(int ac, char **av, char **env)
 {
     (void) ac;
@@ -85,16 +146,30 @@ int main(int ac, char **av, char **env)
     lexer->env = copy_env(env);
     while(1)
     {
+        signal(SIGINT, my_handler);
         str = readline("minishell >$ ");
+        if (!str)
+            break;
         if (str[0] != '\0')
         {
             lexer = init_lexer(str, lexer);
+			token = NULL;
             while ((tmp = get_next_token(lexer)) != NULL && !lexer->flg_error)
-                add_back(&token, tmp);
+			{
+				add_back(&token, tmp);
+                tmp = NULL;
+			}
+
+			tmp = token;
+			int i = 0;
+			while(tmp)
+			{
+				printf("%d |%s|\n", i,tmp->value);
+				i++;
+				tmp = tmp->next;
+			}
             if ((token) != NULL)
-            {
                 parse = init_parsing(&token, lexer);
-            }
             if(!token && parse != NULL)
             {
                 free(parse->cmd);
@@ -104,68 +179,66 @@ int main(int ac, char **av, char **env)
                 free(parse->rdr);
                 parse->rdr = NULL;
             }
-            //t_parse *tmp1 = parse;
-            /*
-            if (lexer->flg_error == 0 && parse != NULL)
-            {
-                while(tmp1)
-                {
-                    if (tmp1->cmd != NULL)
-                    {
-                        printf("cmd = %s\n", tmp1->cmd);
-                        free(tmp1->cmd);
-                    }
-                    if (tmp1->arg != NULL)
-                    {
-                        int i = 0;
-                        while(tmp1->arg[i])
-                        {
-                            printf("arg = %s\n", tmp1->arg[i]);
-                            i++;
-                        }
-                    }
-                    if (tmp1->rdr != NULL)
-                    {
-                        t_rdr *r = tmp1->rdr;
-                        while(r)
-                        {
-                            printf("rdr->type = |%d|, rdr->value = |%s|\t, flg_error = |%d|\n", r->type, r->value, r->herdoc);
-                            r = r->next;
-                        }
-                    }
-                    printf("-----------------------\n");
-                    tmp1 = tmp1->next;
+            // t_parse *tmp1 = parse;
+            // if (lexer->flg_error == 0 && parse != NULL)
+            // {
+            //     while(tmp1)
+            //     {
+            //         if (tmp1->cmd != NULL)
+            //         {
+            //             printf("cmd = %s\n", tmp1->cmd);
+            //             free(tmp1->cmd);
+            //         }
+            //         if (tmp1->arg != NULL)
+            //         {
+            //             int i = 0;
+            //             while(tmp1->arg[i])
+            //             {
+            //                 printf("arg = %s\n", tmp1->arg[i]);
+            //                 i++;
+            //             }
+            //         }
+            //         if (tmp1->rdr != NULL)
+            //         {
+            //             t_rdr *r = tmp1->rdr;
+            //             while(r)
+            //             {
+            //                 printf("rdr->type = |%d|, rdr->value = |%s|\t, flg_error = |%d|\n", r->type, r->value, r->herdoc);
+            //                 r = r->next;
+            //             }
+            //         }
+            //         printf("-----------------------\n");
+            //         tmp1 = tmp1->next;
 					
-                }
-            }*/
+            //     }
+            // }
             if (lexer->flg_error == 1)
+            {
                 write(2, "syntax_error\n", 14);
+                g_exitm = 255;
+            }
             if (parse != NULL)
                 herdoc_handler(parse);
 			if (!lexer->flg_error && parse != NULL)
 				rdr_create_files(parse);
             if (ft_strlen(str) > 0)
                 add_history(str);
-            if (parse != NULL)
-                execution(parse, &env_list);
+            // if (parse != NULL)
+            //     execution(parse, &env_list);
             tmp = token;
-            while(tmp)
-            {
-                token = token->next;
-                free(tmp);
-                tmp = token;
-            }
-            // tmp1 = parse;
-            // while(tmp1)
-            // {
-            //     if (tmp1->cmd != NULL && tmp1->cmd[0] != '\0')
-            //     {
-            //         free(tmp1->cmd);
-            //     }
-            //     tmp1 = tmp1->next;
-            // }
-        }
+			while (tmp)
+			{
+				token = token->next;
+				free(tmp->value);
+				free(tmp);
+				tmp = token;
 
+			}
+            ft_free_list(parse);
+        }
+            free(token);
+            free(str);
+            system("leaks minishell");
     }
-return 0;
+    return (0);
 }
