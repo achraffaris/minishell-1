@@ -3,17 +3,18 @@
 void    execute_cmd(t_parse *cmd, t_env **env)
 {
     if (cmd->type == BUILTIN_CMD)
-    {
         run_as_builtin(cmd, env);
-        exit(EXIT_SUCCESS);
-    }
-    if (cmd->path[0] == '.' || cmd->path[0] == '/')
+    else
     {
-        if(access(cmd->path, X_OK) == ERROR_RETURNED)
-            raise_error(NULL, NULL, 126, TRUE);
+        if (cmd->path[0] == '.' || cmd->path[0] == '/')
+        {
+            if(access(cmd->path, X_OK) == ERROR_RETURNED)
+                raise_error(NULL, NULL, 126, TRUE);
+        }
+        if (execve(cmd->path, cmd->cmd_2d, cmd->env_2d) == ERROR_RETURNED)
+            raise_error("command not found", cmd->cmd, 127, TRUE);
     }
-    if (execve(cmd->path, cmd->cmd_2d, cmd->env_2d) == ERROR_RETURNED)
-        raise_error("command not found", cmd->cmd, 127, TRUE);
+    
 }
 
 int fork_manager(t_parse *cmd, t_exec *exe)
@@ -49,6 +50,11 @@ void    close_fds(t_exec *exe, t_parse *cmd)
         close(exe->pipes[i][WRITE_END]);
         close(exe->pipes[i][READ_END]);
         i++;
+    }
+    if (cmd)
+    {
+        close(cmd->read_src);
+        close(cmd->write_dst);
     }
 }
 
@@ -102,8 +108,7 @@ void    run_cmd(t_parse *data, t_env **env, t_exec *exe)
                     dup2(current->read_src, 0);
                 if (current->write_dst != NONE)
                     dup2(current->write_dst, 1);
-                if (exe->pipes)
-                    close_fds(exe, current);
+                close_fds(exe, current);
                 execute_cmd(current, env);
             }
         }
