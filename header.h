@@ -22,7 +22,6 @@
 # include <fcntl.h>
 # include <signal.h>
 
-int g_exitm;
 
 typedef struct s_lexer
 {
@@ -61,12 +60,14 @@ typedef struct s_parse
 	t_rdr			*rdr;
     t_env   		*env;
 	int				pid;
+	int				type;
 	char			*path;
 	char			**cmd_2d;
 	char			**env_2d;
 	int				read_src;
 	int				exit_code;
 	int				write_dst;
+	int				status;
 	struct s_parse	*next;
 }	t_parse;
 
@@ -102,4 +103,6 @@ t_rdr	*add_rdr(char *str, int type, int herdoc);
 void	add_back_parse(t_parse **parse, t_parse *tmp);
 void	add_back_rdr(t_rdr **rdr, t_rdr *tmp);
 int	count_arg(t_token *head);
+
+
 #endif

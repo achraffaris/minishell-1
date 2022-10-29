@@ -30,7 +30,7 @@ void    remove_env_item(char *item, t_env *env, t_env **head)
     t_env *current;
     t_env *found;
     
-    current = env;
+    current = *head;
     if (ft_strcmp(item, current->key) == 0)
     {
         *head = current->next;
@@ -93,6 +93,9 @@ void    update_env_item(t_env *item, char *arg)
     char *value;
 
     value = extract_env_value(arg);
-    free(item->value);
-    item->value = value;
+    if (value)
+    {
+        free(item->value);
+        item->value = value;
+    }
 }

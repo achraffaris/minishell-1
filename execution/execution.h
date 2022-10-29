@@ -18,6 +18,20 @@
 #define SINGLE_LEFT_RED 4
 #define SINGLE_RIGHT_RED 5
 #define DOUBLE_RIGHT_RED 6
+#define ERROR_FILE -2
+
+#define OK 1
+#define KO 0
+
+#define BUILTIN_CMD 7
+#define NORMAL_CMD 8
+
+typedef struct s_exec
+{
+    int ncmds;
+    int i;
+    int **pipes;
+}   t_exec;
 
 void    execution(t_parse *data, t_env **env);
 void    raise_error(char *err_msg, char *err_src, int exit_code);

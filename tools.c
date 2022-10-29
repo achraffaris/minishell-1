@@ -95,7 +95,7 @@ char	*dollar_handler(t_lexer *lexer)
 		lexer_advance(lexer);
 	if (lexer->c == '?')
 	{
-		s = ft_strjoin(s, ft_itoa(g_exitm));
+		//s = ft_strjoin(s, ft_itoa(g_exitm));
 		lexer_advance(lexer);
 		return (s);
 	}

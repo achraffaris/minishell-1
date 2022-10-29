@@ -61,9 +61,9 @@ int run_unset(t_parse *data, t_env **env)
     return (TRUE);
 }
 
-int run_export(t_parse *data)
+int run_export(t_parse *data, t_env **env)
 {
-    t_env   *env;
+    t_env   *found;
     char    *key;
     int     i;
 
@@ -71,17 +71,17 @@ int run_export(t_parse *data)
     if (!is_identical(data->cmd, EXPORT))
         return (FALSE);
     if (!data->arg)
-        print_sorted_env_items(data->env);
+        print_sorted_env_items(*env);
     else
     {
         while (data->arg[i])
         {
             key = extract_env_key(data->arg[i]);
-            env = get_env_item_or_none(key, data->env);
-            if (!env)
-                add_env_item(&data->env, data->arg[i]);
+            found = get_env_item_or_none(key, data->env);
+            if (!found)
+                add_env_item(env, data->arg[i]);
             else
-                update_env_item(env, data->arg[i]);
+                update_env_item(found, data->arg[i]);
             i++;
         }
     }

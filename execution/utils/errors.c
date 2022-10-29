@@ -6,5 +6,5 @@ void    raise_error(char *err_msg, char *err_src, int exit_code)
         printf("%s: %s\n",err_src, err_msg);
     else
         perror(err_src);
-    g_exitm = exit_code;
+    //g_exitm = exit_code;
 }

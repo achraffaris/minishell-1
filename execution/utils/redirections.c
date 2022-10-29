@@ -5,7 +5,7 @@ int get_input_redirection(t_parse *cmd)
     t_rdr *current;
     int fd;
 
-    fd = 0;
+    fd = NONE;
     current = cmd->rdr;
     while (current)
     {
@@ -21,7 +21,7 @@ int get_output_redirection(t_parse *cmd)
     t_rdr *current;
     int fd;
 
-    fd = 0;
+    fd = NONE;
     current = cmd->rdr;
     while (current)
     {
