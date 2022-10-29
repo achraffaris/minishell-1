@@ -64,7 +64,7 @@ char    **get_full_cmd(char *cmd, char **args)
         i++;
     full_cmd = malloc(sizeof(char *) * (i + 2));
     if (!full_cmd)
-        raise_error("Memory allocation failed!", "malloc", 0);
+        raise_error("Memory allocation failed!", "malloc", EXIT_FAILURE, TRUE);
     i = 0;
     full_cmd[i] = ft_strdup(cmd);
     i++;

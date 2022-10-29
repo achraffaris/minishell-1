@@ -34,7 +34,7 @@ typedef struct s_exec
 }   t_exec;
 
 void    execution(t_parse *data, t_env **env);
-void    raise_error(char *err_msg, char *err_src, int exit_code);
+void    raise_error(char *err_msg, char *err_src, int exit_code, int exit);
 int     substring_length(char *str, char to_stop, int mode);
 t_env   *setup_env(char **env);
 char    *find_cmd_path(char *cmd, t_env *env);

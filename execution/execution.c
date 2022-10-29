@@ -10,16 +10,10 @@ void    execute_cmd(t_parse *cmd, t_env **env)
     if (cmd->path[0] == '.' || cmd->path[0] == '/')
     {
         if(access(cmd->path, X_OK) == ERROR_RETURNED)
-        {
-            raise_error(NULL, NULL, 126);
-            exit(126);
-        }
+            raise_error(NULL, NULL, 126, TRUE);
     }
     if (execve(cmd->path, cmd->cmd_2d, cmd->env_2d) == ERROR_RETURNED)
-    {
-        raise_error(NULL, NULL, 127);
-        exit(127);
-    }
+        raise_error("command not found", cmd->cmd, 127, TRUE);
 }
 
 int fork_manager(t_parse *cmd, t_exec *exe)
@@ -56,12 +50,6 @@ void    close_fds(t_exec *exe, t_parse *cmd)
         close(exe->pipes[i][READ_END]);
         i++;
     }
-}
-
-
-void    close_child_fds(t_exec *exe, t_parse *cmd)
-{
-    
 }
 
 int read_from_pipe(t_parse *cmd, t_exec *exe)
@@ -106,7 +94,6 @@ void    run_cmd(t_parse *data, t_env **env, t_exec *exe)
                 current->pid = fork();
             if (current->pid == 0 || current->pid == NONE)
             {
-                //sleep(30);
                 if (current->read_src == NONE && exe->pipes)
                     current->read_src = read_from_pipe(current, exe);
                 if (current->write_dst == NONE && exe->pipes && current->next)
