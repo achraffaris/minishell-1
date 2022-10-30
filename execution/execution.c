@@ -36,7 +36,7 @@ void    wait_cmds(t_parse *cmds)
     while (current)
     {
         if (current->pid != NONE)
-            waitpid(current->pid, 0, 0);
+            waitpid(current->pid, &g_exitm, WUNTRACED);
         current = current->next;
     }
 }

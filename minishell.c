@@ -134,10 +134,11 @@ int main(int ac, char **av, char **env)
     env_list = setup_env(env);
     char *str = NULL;
     lexer = malloc(sizeof(t_lexer));
-    lexer->env = copy_env(env);
+
     //signal(SIGINT, my_handler);
     while(1)
     {
+        lexer->env = env_converter(env_list);
         str = readline("minishell >$ ");
         if (str[0] != '\0')
         {
