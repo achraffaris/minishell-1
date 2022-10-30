@@ -13,10 +13,10 @@ char    *extract_cmd_path(char **paths, char *cmd)
     //if (access ())
     //return (cmd);
     //stat
-    new_cmd = ft_strjoin("/", cmd);
+    new_cmd = ft_strjoinx("/", cmd);
     while (paths[i])
     {
-        full_path = ft_strjoin(paths[i], new_cmd);
+        full_path = ft_strjoinx(paths[i], new_cmd);
         if (access(full_path, X_OK) != ERROR_RETURNED)
         {
             free(new_cmd);
@@ -26,7 +26,7 @@ char    *extract_cmd_path(char **paths, char *cmd)
         i++;
     }
     //printf ("command not found \n");
-    //exitm = 127;
+    //g_exitm = 127;
     //return (NULL);
     //exit (num % 255);
     return (cmd);
@@ -64,7 +64,7 @@ char    **get_full_cmd(char *cmd, char **args)
         i++;
     full_cmd = malloc(sizeof(char *) * (i + 2));
     if (!full_cmd)
-        raise_error("Memory allocation failed!", "malloc");
+        raise_error("Memory allocation failed!", "malloc", EXIT_FAILURE, TRUE);
     i = 0;
     full_cmd[i] = ft_strdup(cmd);
     i++;

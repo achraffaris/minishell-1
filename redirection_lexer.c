@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/23 21:54:29 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/28 15:33:44 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/26 02:32:38 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 char	*stock_rdr_value(t_lexer *lexer, char *str)
 {
 	char *a;
-	
 	if (lexer->c == '$')
 	{
 		a = dollar_handler(lexer);

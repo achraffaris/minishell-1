@@ -8,7 +8,7 @@ t_env *duplicate_env(t_env *env)
 
     new = malloc(sizeof(t_env));
     if (!new)
-        raise_error("Memory Allocation Failed!", "malloc");
+        raise_error("Memory Allocation Failed!", "malloc", EXIT_FAILURE, TRUE);
     new_head = new;
     current = env;
     while (current)
@@ -19,7 +19,7 @@ t_env *duplicate_env(t_env *env)
         {
             new->next = malloc(sizeof(t_env));
             if (!new->next)
-                raise_error("Memory Allocation Failed!", "malloc");
+                raise_error("Memory Allocation Failed!", "malloc", EXIT_FAILURE, TRUE);
         }
         else
             new->next = NULL;

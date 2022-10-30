@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 08:44:28 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/28 15:55:28 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/27 11:14:17 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,11 @@
 #include "execution/execution.h"
 #include <signal.h>
 
-void my_handler(int signum)
-{
-   if (signum == SIGINT)
-    {
-        printf("\n");
-        rl_on_new_line();
-        rl_replace_line("", 0);
-        rl_redisplay();
-    }
-}
+// void my_handler()
+// {
+//     rl_on_new_line();
+//     rl_redisplay();
+// }
 
 void add_back(t_token **list, t_token *tmp)
 {
@@ -95,7 +90,6 @@ void	rdr_create_files(t_parse *parse)
 		tmp = tmp->next;
 	}
 }
-
 void ft_free_list(t_parse *parse)
 {
     int i;
@@ -117,10 +111,7 @@ void ft_free_list(t_parse *parse)
         while(parse->rdr)
         {
             if(parse->rdr->value)
-			{
                 free(parse->rdr->value);
-				free(parse->rdr);
-			}
             parse->rdr = parse->rdr->next;
         }
         tmp = parse->next;
@@ -144,12 +135,10 @@ int main(int ac, char **av, char **env)
     char *str = NULL;
     lexer = malloc(sizeof(t_lexer));
     lexer->env = copy_env(env);
+    //signal(SIGINT, my_handler);
     while(1)
     {
-        signal(SIGINT, my_handler);
         str = readline("minishell >$ ");
-        if (!str)
-            break;
         if (str[0] != '\0')
         {
             lexer = init_lexer(str, lexer);
@@ -159,15 +148,14 @@ int main(int ac, char **av, char **env)
 				add_back(&token, tmp);
                 tmp = NULL;
 			}
-
-			tmp = token;
-			int i = 0;
-			while(tmp)
-			{
-				printf("%d |%s|\n", i,tmp->value);
-				i++;
-				tmp = tmp->next;
-			}
+			// tmp = token;
+			// int i = 0;
+			// while(tmp)
+			// {
+			// 	printf("%d |%s|\n", i,tmp->value);
+			// 	i++;
+			// 	tmp = tmp->next;
+			// }
             if ((token) != NULL)
                 parse = init_parsing(&token, lexer);
             if(!token && parse != NULL)
@@ -215,7 +203,7 @@ int main(int ac, char **av, char **env)
             if (lexer->flg_error == 1)
             {
                 write(2, "syntax_error\n", 14);
-                g_exitm = 255;
+                //g_exitm = 255;
             }
             if (parse != NULL)
                 herdoc_handler(parse);
@@ -223,22 +211,20 @@ int main(int ac, char **av, char **env)
 				rdr_create_files(parse);
             if (ft_strlen(str) > 0)
                 add_history(str);
-            // if (parse != NULL)
-            //     execution(parse, &env_list);
+            if (parse != NULL)
+                execution(parse, &env_list);
             tmp = token;
-			while (tmp)
-			{
-				token = token->next;
-				free(tmp->value);
-				free(tmp);
-				tmp = token;
-
-			}
+            while(tmp)
+            {
+                token = token->next;
+                free(tmp->value);
+                free(tmp);
+                tmp = token;
+            }
             ft_free_list(parse);
+            // free(lexer);
         }
-            free(token);
-            free(str);
-            system("leaks minishell");
+        free(str);
     }
     return (0);
 }

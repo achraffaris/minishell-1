@@ -5,7 +5,7 @@ int env_key_valid(char *env_key)
     int i;
 
     i = 0;
-    if (!env_key || ft_isdigit(env_key[0]))
+    if (!(ft_isalpha(env_key[0]) || env_key[0] == '_'))
         return (FALSE);
     while (env_key[i])
     {
@@ -28,7 +28,7 @@ char    *extract_env_key(char *item)
     len = substring_length(item, '=', BEFORE);
     env_key = malloc(sizeof(char) * (len + 1));
     if (!env_key)
-        raise_error("Memory allocation failed!", "malloc");
+        raise_error("Memory allocation failed!", "malloc", EXIT_FAILURE, TRUE);
     while (item[i] && item[i] != '=')
     {
         env_key[i] = item[i];
@@ -36,7 +36,10 @@ char    *extract_env_key(char *item)
     }
     env_key[i] = '\0';
     if (!env_key_valid(env_key))
-        raise_error("Not a valid identifier", env_key);
+    {
+        raise_error("Not a valid identifier", env_key, EXIT_FAILURE, FALSE);
+        return (NULL);
+    }
     return (env_key);
 }
 
@@ -54,7 +57,7 @@ char    *extract_env_value(char *item)
         return (NULL);
     env_value = malloc(sizeof(char) * (len + 1));
     if (!env_value)
-        raise_error("Memory Allocation Failed!", "malloc");
+        raise_error("Memory Allocation Failed!", "malloc", EXIT_FAILURE, TRUE);
     while (item[i] && item[i] != '=')
         i++;
     if (item[i] == '=')
@@ -75,7 +78,7 @@ void    add_env_item(t_env **head, char *item)
     current = *head;
     new = malloc(sizeof(t_env));
     if (!new)
-        raise_error("Memory Allocation Failed!", "malloc");
+        raise_error("Memory Allocation Failed!", "malloc", EXIT_FAILURE, TRUE);
     while (current && current->next)
         current = current->next;
     new->key = extract_env_key(item);
