@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 08:44:28 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/31 02:29:54 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/31 16:32:53 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,9 +158,9 @@ int main(int ac, char **av, char **env)
     env_list = setup_env(env);
     char *str = NULL;
     lexer = malloc(sizeof(t_lexer));
-    lexer->env = copy_env(env);
     while(1)
     {
+        lexer->env = env_converter(env_list);
         signal(SIGINT, my_handler);
         signal(SIGQUIT, SIG_IGN);
         str = readline("minishell >$ ");

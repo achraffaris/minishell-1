@@ -1,0 +1,13 @@
+echo kk | echo kk > ii
+
+cd errors
+cat | cat | ls
+./minishell.c
+unset !asdas
+unset adsads/fs
+export !asdas
+export adsads/fs
+env ffdadf
+ export test=value ; dont lose the value
+ pwd env
+0x7f9297c04030
