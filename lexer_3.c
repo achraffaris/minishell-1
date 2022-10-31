@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/23 21:48:59 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/27 00:35:28 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/31 01:10:49 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,7 @@ char	*collect_string(t_lexer *lexer)
 	char	*value;
 	char	*s;
 
-	value = malloc(2);
-	value[0] = '\0';
+	value = ft_strdup("");
 	while (lexer->c)
 	{
 		if (lexer->c == '"' || lexer->c == '\'' || lexer->c == '$')

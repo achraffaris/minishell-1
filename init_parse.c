@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 01:41:45 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/24 01:41:59 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/31 02:54:41 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,20 @@ t_parse	*init_parsing(t_token **token, t_lexer *lexer)
 	parse = NULL;
 	rdr = NULL;
 	head = *token;
-	tmp = init_var(tmp);
 	lexer->y = 0;
+	if (head->e_type == 2)
+	{
+		lexer->flg_error = 1;
+		return (NULL);
+	}
+	tmp = init_var(tmp);
 	while (head)
 	{
+		if (head->e_type == 2 && head->next == NULL)
+		{
+			lexer->flg_error = 1;
+			break ;
+		}
 		lexer->y = init_parse2(head, tmp, lexer, rdr);
 		if (head->e_type == 2)
 		{

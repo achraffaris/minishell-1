@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 23:33:34 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/27 00:43:05 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/31 00:50:52 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 t_lexer	*init_lexer(char *contents, t_lexer *lexer)
 {
-	// lexer = malloc(sizeof(t_lexer));
 	lexer->contents = contents;
 	lexer->i = 0;
 	lexer->flg = 1;

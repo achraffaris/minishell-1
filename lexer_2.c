@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 23:57:04 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/27 00:39:47 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/31 01:07:51 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,11 @@ t_token	*handle_single_quote(t_lexer *lexer)
 			|| lexer->c == '<' || lexer->c == '>')
 			break ;
 		str = stock_value(lexer, str);
+		if (!str[0])
+		{
+			free(str);
+			str = NULL;
+		}
 	}
 	if (lexer->flg == 1)
 	{
