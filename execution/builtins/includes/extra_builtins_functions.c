@@ -1,10 +1,10 @@
 #include "../builtins.h"
 
-int run_env(t_parse *data)
+int run_env(t_parse *data, t_env **env)
 {
     t_env *current;
 
-    current = data->env;
+    current = *env;
     if (!is_identical(data->cmd, ENV))
         return (FALSE);
     while (current)

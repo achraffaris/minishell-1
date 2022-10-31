@@ -26,14 +26,47 @@ int run_echo(t_parse *data)
     return (TRUE);
 }
 
-int run_cd(t_parse *data)
+void update_env_value(t_env *env, char *new_value)
 {
+    if (env)
+    {
+        free(env->value);
+        env->value = ft_strdup(new_value);
+    }
+}
+int run_cd(t_parse *data, t_env *env)
+{
+    t_env *old_pwd;
+    t_env *pwd;
+    t_env *home;
+
     if (!is_identical(data->cmd, CD))
         return (FALSE);
-    if (data->arg && chdir(*data->arg) == ERROR_RETURNED)
-        raise_error(NULL, *data->arg, EXIT_FAILURE, TRUE);
-    else if (!data->arg && chdir(getenv("HOME")) == ERROR_RETURNED)
-        raise_error(NULL, NULL, EXIT_FAILURE, TRUE);
+    home = get_env_item_or_none("HOME", env);
+    pwd = get_env_item_or_none("PWD", env);
+    old_pwd = get_env_item_or_none("OLDPWD", env);
+    if (data->arg)
+    {
+        if (chdir(*data->arg) == ERROR_RETURNED)
+            raise_error(NULL, *data->arg, EXIT_FAILURE, FALSE);
+        else
+        {
+            update_env_value(old_pwd, pwd->value);
+            update_env_value(pwd, *data->arg);
+        }
+    }
+    else if (!data->arg)
+    {
+        if (!home)
+            raise_error("HOME not set", "cd", EXIT_FAILURE, FALSE);
+        else if (chdir(home->value) == ERROR_RETURNED)
+            raise_error("HOME not set", "cd", EXIT_FAILURE, FALSE);
+        else
+        {
+            update_env_value(old_pwd, pwd->value);
+            update_env_value(pwd, home->value);
+        }
+    }   
     return (TRUE);
 }
 
@@ -77,11 +110,14 @@ int run_export(t_parse *data, t_env **env)
         while (data->arg[i])
         {
             key = extract_env_key(data->arg[i]);
-            found = get_env_item_or_none(key, data->env);
-            if (!found)
-                add_env_item(env, data->arg[i]);
-            else
-                update_env_item(found, data->arg[i]);
+            if (key)
+            {
+                found = get_env_item_or_none(key, data->env);
+                if (!found)
+                    add_env_item(env, data->arg[i]);
+                else
+                    update_env_item(found, data->arg[i]);
+            }
             i++;
         }
     }

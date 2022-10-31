@@ -24,11 +24,11 @@ int     start_with(char *word, char *str);
 
 int     run_as_builtin(t_parse *data, t_env **env);
 int     run_echo(t_parse *data);
-int     run_cd(t_parse *data);
+int     run_cd(t_parse *data, t_env *env);
 int     run_pwd(t_parse *data);
 int     run_unset(t_parse *data, t_env **env);
 int     run_export(t_parse *data, t_env **env);
-int     run_env(t_parse *data);
+int     run_env(t_parse *data, t_env **env);
 int     run_exit(t_parse *data);
 int     env_key_valid(char *env_key);
 

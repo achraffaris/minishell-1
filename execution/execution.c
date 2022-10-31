@@ -2,6 +2,7 @@
 
 void    execute_cmd(t_parse *cmd, t_env **env)
 {
+    g_exitm = EXIT_SUCCESS;
     if (cmd->type == BUILTIN_CMD)
         run_as_builtin(cmd, env);
     else
@@ -21,7 +22,7 @@ int fork_manager(t_parse *cmd, t_exec *exe)
 {
     int pid;
 
-    pid == NONE;
+    pid = NONE;
     if (exe->pipes || cmd->type == NORMAL_CMD)
         pid = fork();
     return (pid);
@@ -35,7 +36,7 @@ void    wait_cmds(t_parse *cmds)
     while (current)
     {
         if (current->pid != NONE)
-            waitpid(current->pid, 0, 0);
+            waitpid(current->pid, &g_exitm, WUNTRACED);
         current = current->next;
     }
 }
@@ -93,25 +94,28 @@ void    run_cmd(t_parse *data, t_env **env, t_exec *exe)
     t_parse *current;
 
     current = data;
-        if (current->status == OK)
+    if (current->status == OK)
+    {
+        current->pid = NONE;
+        if (exe->pipes || current->type == NORMAL_CMD)
+            current->pid = fork();
+        if (current->pid == 0 || current->pid == NONE)
         {
-            current->pid = NONE;
-            if (exe->pipes || current->type == NORMAL_CMD)
-                current->pid = fork();
-            if (current->pid == 0 || current->pid == NONE)
-            {
-                if (current->read_src == NONE && exe->pipes)
-                    current->read_src = read_from_pipe(current, exe);
-                if (current->write_dst == NONE && exe->pipes && current->next)
-                    current->write_dst = write_into_pipe(current, exe);
-                if (current->read_src != NONE)
-                    dup2(current->read_src, 0);
-                if (current->write_dst != NONE)
-                    dup2(current->write_dst, 1);
-                close_fds(exe, current);
-                execute_cmd(current, env);
-            }
+            if (current->read_src == NONE && exe->pipes)
+                current->read_src = read_from_pipe(current, exe);
+            if (current->write_dst == NONE && exe->pipes && current->next)
+                current->write_dst = write_into_pipe(current, exe);
+            int old = dup(1);
+            if (current->read_src != NONE)
+                dup2(current->read_src, 0);
+            if (current->write_dst != NONE)
+                dup2(current->write_dst, 1);
+            close_fds(exe, current);
+            execute_cmd(current, env);
+            dup2(old, 1);
         }
+
+    }
 }
 
 int **create_pipes(int npipes)
@@ -175,6 +179,8 @@ void    setup_run_cmds(t_parse *data, t_env **env, t_exec *exe)
     {
         current->id = i;
         current->type = get_cmd_type(current->cmd);
+        if (current->rdr)
+            printf("red fd = %d\n", current->rdr->fd);
         if (current->type == NORMAL_CMD)
         {
             current->path = find_cmd_path(current->cmd, *env);

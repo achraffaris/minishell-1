@@ -5,7 +5,7 @@ int env_key_valid(char *env_key)
     int i;
 
     i = 0;
-    if (!env_key || ft_isdigit(env_key[0]))
+    if (!(ft_isalpha(env_key[0]) || env_key[0] == '_'))
         return (FALSE);
     while (env_key[i])
     {
@@ -36,7 +36,10 @@ char    *extract_env_key(char *item)
     }
     env_key[i] = '\0';
     if (!env_key_valid(env_key))
-        raise_error("Not a valid identifier", env_key, EXIT_FAILURE, TRUE);
+    {
+        raise_error("Not a valid identifier", env_key, EXIT_FAILURE, FALSE);
+        return (NULL);
+    }
     return (env_key);
 }
 

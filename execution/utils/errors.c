@@ -13,5 +13,5 @@ void    raise_error(char *err_msg, char *err_src, int exit_code, int should_exit
         perror(err_src);
     if (should_exit)
         exit(exit_code);
-    //g_exitm = exit_code;
+    g_exitm = exit_code;
 }
