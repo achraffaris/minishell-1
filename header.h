@@ -6,7 +6,7 @@
 /*   By: schoukou <schoukou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/16 22:23:14 by schoukou          #+#    #+#             */
-/*   Updated: 2022/10/31 16:35:40 by schoukou         ###   ########.fr       */
+/*   Updated: 2022/10/27 09:29:38 by schoukou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include <unistd.h>
 # include "token.h"
 # include <stdlib.h>
-# include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "libft/libft.h"
@@ -63,6 +62,7 @@ typedef struct s_parse
 	t_rdr			*rdr;
     t_env   		*env;
 	int				pid;
+	int				type;
 	char			*path;
 	char			**cmd_2d;
 	char			**env_2d;
@@ -104,5 +104,7 @@ char	*join_to_str(t_lexer *lexer);
 t_rdr	*add_rdr(char *str, int type, int herdoc);
 void	add_back_parse(t_parse **parse, t_parse *tmp);
 void	add_back_rdr(t_rdr **rdr, t_rdr *tmp);
-int		count_arg(t_token *head);
+int	count_arg(t_token *head);
+
+
 #endif
